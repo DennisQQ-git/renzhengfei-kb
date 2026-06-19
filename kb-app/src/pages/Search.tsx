@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import Reveal from '../components/Reveal'
 import { useDebounce } from '../utils/hooks'
-import { searchDocuments } from '../utils/api'
+import { searchDocuments, fetchSearchIndex } from '../utils/api'
 import { useApp } from '../utils/context'
 
 export default function Search() {
@@ -11,17 +11,24 @@ export default function Search() {
   const initialQuery = searchParams.get('q') || ''
   const [query, setQuery] = useState(initialQuery)
   const debouncedQuery = useDebounce(query, 200)
-  const [results, setResults] = useState(indexData.documents)
+  const [searchIndex, setSearchIndex] = useState<any[] | null>(null)
+  const [results, setResults] = useState<any[]>([])
+
+  // Load the full search index once (it has excerpts)
+  useEffect(() => {
+    fetchSearchIndex().then(setSearchIndex).catch(() => setSearchIndex(indexData.documents))
+  }, [])
 
   useEffect(() => {
+    if (!searchIndex) return
     if (debouncedQuery) {
       setSearchParams({ q: debouncedQuery }, { replace: true })
-      searchDocuments(debouncedQuery, indexData.documents).then(setResults)
+      searchDocuments(debouncedQuery, searchIndex).then(setResults)
     } else {
       setSearchParams({}, { replace: true })
       setResults([])
     }
-  }, [debouncedQuery, indexData.documents, setSearchParams])
+  }, [debouncedQuery, searchIndex, setSearchParams])
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">

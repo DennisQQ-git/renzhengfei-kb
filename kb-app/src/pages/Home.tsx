@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import Reveal from '../components/Reveal'
 import { useApp } from '../utils/context'
+import { fetchFeatured } from '../utils/api'
 
 const TAG_CATEGORIES: Record<string, string[]> = {
   '技术创新': ['5G', 'HarmonyOS', '半导体', '基础研究', '备胎计划', '操作系统', '海思', '研发管理', '芯片', '鸿蒙', '主航道', '网络安全'],
@@ -15,10 +16,11 @@ export default function Home() {
 
   const recentDocs = [...documents].reverse().slice(0, 10)
 
-  // Shuffle once on mount
-  const [featuredDocs] = useState(() =>
-    [...documents].sort(() => Math.random() - 0.5).slice(0, 10)
-  )
+  const [featuredDocs, setFeaturedDocs] = useState<any[]>([])
+
+  useEffect(() => {
+    fetchFeatured().then(setFeaturedDocs).catch(() => setFeaturedDocs([]))
+  }, [])
 
   const tagCounts: Record<string, number> = {}
   documents.forEach(d => {

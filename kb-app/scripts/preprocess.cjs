@@ -313,18 +313,30 @@ async function main() {
     totalFiles++;
   }
 
-  // Write index
+  // Write index (without excerpts — saves ~75% size)
   const indexData = {
     total: allDocs.length,
     years: yearDirs.map(y => parseInt(y)),
-    documents: allDocs.map(({ slug, title, year, excerpt, tags, category, isTopic, filename }) => ({
-      slug, title, year, excerpt, tags, category, isTopic: !!isTopic, filename
+    documents: allDocs.map(({ slug, title, year, tags, category, isTopic, filename }) => ({
+      slug, title, year, tags, category, isTopic: !!isTopic, filename
     })),
     topics: allDocs.filter(d => d.isTopic).map(({ slug, title, tags, category }) => ({ slug, title, tags, category })),
     allTags: [...new Set(allDocs.flatMap(d => d.tags))].sort(),
   };
 
   fs.writeFileSync(path.join(OUTPUT_DIR, 'index.json'), JSON.stringify(indexData));
+
+  // Write featured.json — 10 random docs with excerpts for the carousel
+  const featured = [...allDocs].sort(() => Math.random() - 0.5).slice(0, 10).map(
+    ({ slug, title, year, excerpt, tags }) => ({ slug, title, year, excerpt, tags })
+  );
+  fs.writeFileSync(path.join(OUTPUT_DIR, 'featured.json'), JSON.stringify(featured));
+
+  // Write search-index.json — all docs with excerpts for the search page
+  const searchIndex = allDocs.map(({ slug, title, year, excerpt, tags, category, isTopic }) => ({
+    slug, title, year, excerpt, tags, category, isTopic: !!isTopic
+  }));
+  fs.writeFileSync(path.join(OUTPUT_DIR, 'search-index.json'), JSON.stringify(searchIndex));
 
   console.log(`✅ Preprocessed ${totalFiles} documents`);
   console.log(`📊 Index written to public/data/index.json`);

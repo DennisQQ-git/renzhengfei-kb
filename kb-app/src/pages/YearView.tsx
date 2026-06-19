@@ -85,9 +85,11 @@ export default function YearView() {
               <h2 className="text-base md:text-lg font-serif font-semibold text-ink-800 group-hover:text-gold-600 transition-colors">
                 {doc.title}
               </h2>
-              <p className="text-sm text-ink-400 mt-1.5 line-clamp-2 leading-relaxed">
-                {doc.excerpt}
-              </p>
+              {doc.excerpt && (
+                <p className="text-sm text-ink-400 mt-1.5 line-clamp-2 leading-relaxed">
+                  {doc.excerpt}
+                </p>
+              )}
               {doc.tags?.filter(Boolean).length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-2.5">
                   {doc.tags.filter(Boolean).map(tag => (

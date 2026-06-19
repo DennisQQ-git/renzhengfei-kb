@@ -6,6 +6,18 @@ export async function fetchIndex() {
   return res.json()
 }
 
+export async function fetchFeatured() {
+  const res = await fetch(`${DATA_BASE}/featured.json`)
+  if (!res.ok) throw new Error('Failed to load featured')
+  return res.json()
+}
+
+export async function fetchSearchIndex() {
+  const res = await fetch(`${DATA_BASE}/search-index.json`)
+  if (!res.ok) throw new Error('Failed to load search index')
+  return res.json()
+}
+
 export async function fetchDocument(slug: string) {
   const res = await fetch(`${DATA_BASE}/documents/${slug}.json`)
   if (!res.ok) throw new Error(`Document not found: ${slug}`)
@@ -18,11 +30,11 @@ export async function fetchYearStats() {
   return res.json()
 }
 
-export async function searchDocuments(query: string, documents: any[]) {
+export function searchDocuments(query: string, documents: any[]) {
   const q = query.toLowerCase()
   return documents.filter(doc =>
     doc.title.toLowerCase().includes(q) ||
-    doc.excerpt.toLowerCase().includes(q) ||
+    doc.excerpt?.toLowerCase().includes(q) ||
     doc.tags?.some((t: string) => t.toLowerCase().includes(q))
   )
 }

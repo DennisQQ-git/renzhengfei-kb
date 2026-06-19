@@ -1,15 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import Home from './pages/Home'
-import YearView from './pages/YearView'
-import ArticleDetail from './pages/ArticleDetail'
-import TagView from './pages/TagView'
-import Search from './pages/Search'
-import UserManagement from './pages/admin/UserManagement'
 import { AppCtx } from './utils/context'
 import type { IndexData } from './types'
 import { fetchIndex } from './utils/api'
+
+const YearView = lazy(() => import('./pages/YearView'))
+const ArticleDetail = lazy(() => import('./pages/ArticleDetail'))
+const TagView = lazy(() => import('./pages/TagView'))
+const Search = lazy(() => import('./pages/Search'))
+const UserManagement = lazy(() => import('./pages/admin/UserManagement'))
 
 export default function App() {
   const [indexData, setIndexData] = useState<IndexData | null>(null)
@@ -51,16 +52,22 @@ export default function App() {
 
   return (
     <AppCtx.Provider value={{ indexData }}>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/year/:year" element={<YearView />} />
-          <Route path="/article/:slug" element={<ArticleDetail />} />
-          <Route path="/tag/:tag" element={<TagView />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/admin/users" element={<UserManagement />} />
-        </Route>
-      </Routes>
+      <Suspense fallback={
+        <div className="flex items-center justify-center min-h-screen bg-cream-50">
+          <div className="w-8 h-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      }>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/year/:year" element={<YearView />} />
+            <Route path="/article/:slug" element={<ArticleDetail />} />
+            <Route path="/tag/:tag" element={<TagView />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/admin/users" element={<UserManagement />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </AppCtx.Provider>
   )
 }
