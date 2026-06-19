@@ -1,0 +1,22 @@
+{
+  "name": "02_project_renzhengfei",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://mirror.ghproxy.com/https://github.com/DennisQQ-git/renzhengfei-kb.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "vitepress": "^1.4.0"
+  }
+}
