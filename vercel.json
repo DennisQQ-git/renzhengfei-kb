@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd kb-app && npm install && npm run build",
+  "outputDirectory": "kb-app/dist",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
