@@ -23,7 +23,7 @@ export default function Search() {
     if (!searchIndex) return
     if (debouncedQuery) {
       setSearchParams({ q: debouncedQuery }, { replace: true })
-      searchDocuments(debouncedQuery, searchIndex).then(setResults)
+      setResults(searchDocuments(debouncedQuery, searchIndex))
     } else {
       setSearchParams({}, { replace: true })
       setResults([])
