@@ -41,7 +41,7 @@ export default function Layout() {
   }
   const getCategoryCount = (category: string) => getCategoryDocs(category).length
 
-  const CATEGORIES = ['任总内部讲话', '任总媒体采访', '华为高管讲话']
+  const CATEGORIES = ['任总内部讲话', '任总媒体采访', '华为高管讲话', '媒体报道']
 
   return (
     <div className="min-h-screen bg-cream-50 relative">
@@ -345,7 +345,7 @@ function CategoryList({ categories, getCategoryDocs, getCategoryCount, expandedC
             {/* Expanded content */}
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                isExpanded ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
+                isExpanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'
               }`}
             >
               <div className="ml-5 pl-3 border-l-2 border-cream-200 space-y-0.5 py-1">
