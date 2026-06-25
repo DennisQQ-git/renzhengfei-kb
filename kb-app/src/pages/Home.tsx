@@ -70,6 +70,22 @@ export default function Home() {
             <Stat value={`${allTags.length}`} label="标签" />
           </div>
         </Reveal>
+        <Reveal delay={4}>
+          <div className="mt-6 flex items-center justify-center gap-2 text-xs text-ink-400">
+            <span className="bg-cream-100 px-2.5 py-1 rounded-md font-mono tracking-wide">
+              V1.0
+            </span>
+            <span>by</span>
+            <a
+              href="https://github.com/DennisQQ-git"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gold-600 hover:text-gold-500 font-medium transition-colors"
+            >
+              Dennisqgh
+            </a>
+          </div>
+        </Reveal>
       </section>
 
       {/* Topic Articles — paginated horizontally */}
