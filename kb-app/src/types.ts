@@ -26,12 +26,3 @@ export interface YearStats {
   [year: string]: number
 }
 
-export interface AdminUser {
-  id: string
-  name: string
-  email: string
-  role: '管理员' | '编辑' | '访客'
-  status: '启用' | '禁用'
-  created: string
-  lastLogin: string
-}

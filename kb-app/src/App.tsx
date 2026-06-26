@@ -10,7 +10,7 @@ const YearView = lazy(() => import('./pages/YearView'))
 const ArticleDetail = lazy(() => import('./pages/ArticleDetail'))
 const TagView = lazy(() => import('./pages/TagView'))
 const Search = lazy(() => import('./pages/Search'))
-const UserManagement = lazy(() => import('./pages/admin/UserManagement'))
+
 
 export default function App() {
   const [indexData, setIndexData] = useState<IndexData | null>(null)
@@ -64,7 +64,6 @@ export default function App() {
             <Route path="/article/:slug" element={<ArticleDetail />} />
             <Route path="/tag/:tag" element={<TagView />} />
             <Route path="/search" element={<Search />} />
-            <Route path="/admin/users" element={<UserManagement />} />
           </Route>
         </Routes>
       </Suspense>

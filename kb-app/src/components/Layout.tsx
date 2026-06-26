@@ -76,7 +76,6 @@ export default function Layout() {
             {/* Desktop Nav - simplified */}
             <nav className="hidden md:flex items-center gap-1">
               <NavLink to="/" active={isActive('/')}>首页</NavLink>
-              <NavLink to="/admin/users" active={isActive('/admin/users')}>管理</NavLink>
 
               {/* Search */}
               <form onSubmit={handleSearch} className="ml-4 relative">
@@ -124,7 +123,6 @@ export default function Layout() {
               </form>
               <div className="flex gap-2 mt-3">
                 <MobileNavLink to="/" onClick={() => setMenuOpen(false)}>首页</MobileNavLink>
-                <MobileNavLink to="/admin/users" onClick={() => setMenuOpen(false)}>管理</MobileNavLink>
               </div>
             </div>
           </div>
