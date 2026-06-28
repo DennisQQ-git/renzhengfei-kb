@@ -30,11 +30,12 @@ export default function Home() {
   })
   const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1])
 
+  const nonBookTopics = topics.filter(t => t.category !== '管理思想丛书')
   // Topic pagination: 5 per page
   const TOPICS_PER_PAGE = 5
-  const topicPages = Math.ceil(topics.length / TOPICS_PER_PAGE)
+  const topicPages = Math.ceil(nonBookTopics.length / TOPICS_PER_PAGE)
   const [topicPage, setTopicPage] = useState(0)
-  const visibleTopics = topics.slice(
+  const visibleTopics = nonBookTopics.slice(
     topicPage * TOPICS_PER_PAGE,
     (topicPage + 1) * TOPICS_PER_PAGE
   )
@@ -73,7 +74,7 @@ export default function Home() {
         <Reveal delay={4}>
           <div className="mt-6 flex items-center justify-center gap-2 text-xs text-ink-400">
             <span className="bg-cream-100 px-2.5 py-1 rounded-md font-mono tracking-wide">
-              V1.0
+              V1.1
             </span>
             <span>by</span>
             <a
@@ -134,6 +135,36 @@ export default function Home() {
                 {topic.category && (
                   <p className="text-[11px] text-ink-400 mt-2">{topic.category}</p>
                 )}
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Management Philosophy Series — three books */}
+      <section>
+        <Reveal>
+          <h2 className="text-xl font-serif font-bold text-ink-800 mb-5 flex items-center gap-2">
+            <span className="w-1 h-5 bg-amber-500 rounded-full inline-block" />
+            管理思想丛书
+          </h2>
+        </Reveal>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {topics.filter(t => t.category === '管理思想丛书' && !t.slug.includes('-')).map((book, i) => (
+            <Reveal key={book.slug} delay={(i + 1) as 1 | 2 | 3}>
+              <Link
+                to={`/article/${book.slug}`}
+                className="card-hover p-5 block group border-l-4 border-amber-400 bg-gradient-to-br from-white to-amber-50/30"
+              >
+                <span className="text-xs font-medium text-amber-600 bg-amber-100 px-2.5 py-0.5 rounded inline-block mb-3">
+                  {i === 0 ? '业务管理' : i === 1 ? '人力资源管理' : '财经管理'}
+                </span>
+                <h3 className="text-base font-serif font-bold text-ink-800 group-hover:text-amber-700 transition-colors leading-snug mb-2">
+                  {book.title}
+                </h3>
+                <p className="text-xs text-ink-400 leading-relaxed line-clamp-3">
+                  {book.tags.filter(Boolean).join(' · ')}
+                </p>
               </Link>
             </Reveal>
           ))}

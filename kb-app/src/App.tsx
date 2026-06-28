@@ -10,6 +10,7 @@ const YearView = lazy(() => import('./pages/YearView'))
 const ArticleDetail = lazy(() => import('./pages/ArticleDetail'))
 const TagView = lazy(() => import('./pages/TagView'))
 const Search = lazy(() => import('./pages/Search'))
+const GraphView = lazy(() => import('./pages/GraphView'))
 
 
 export default function App() {
@@ -64,6 +65,7 @@ export default function App() {
             <Route path="/article/:slug" element={<ArticleDetail />} />
             <Route path="/tag/:tag" element={<TagView />} />
             <Route path="/search" element={<Search />} />
+            <Route path="/graph" element={<GraphView />} />
           </Route>
         </Routes>
       </Suspense>
