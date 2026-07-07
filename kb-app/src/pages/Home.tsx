@@ -74,7 +74,7 @@ export default function Home() {
         <Reveal delay={4}>
           <div className="mt-6 flex items-center justify-center gap-2 text-xs text-ink-400">
             <span className="bg-cream-100 px-2.5 py-1 rounded-md font-mono tracking-wide">
-              V1.1
+              V1.2
             </span>
             <span>by</span>
             <a
@@ -141,7 +141,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Management Philosophy Series — three books */}
+      {/* Management Philosophy Series — books */}
       <section>
         <Reveal>
           <h2 className="text-xl font-serif font-bold text-ink-800 mb-5 flex items-center gap-2">
@@ -149,25 +149,38 @@ export default function Home() {
             管理思想丛书
           </h2>
         </Reveal>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {topics.filter(t => t.category === '管理思想丛书' && !t.slug.includes('-')).map((book, i) => (
-            <Reveal key={book.slug} delay={(i + 1) as 1 | 2 | 3}>
-              <Link
-                to={`/article/${book.slug}`}
-                className="card-hover p-5 block group border-l-4 border-amber-400 bg-gradient-to-br from-white to-amber-50/30"
-              >
-                <span className="text-xs font-medium text-amber-600 bg-amber-100 px-2.5 py-0.5 rounded inline-block mb-3">
-                  {i === 0 ? '业务管理' : i === 1 ? '人力资源管理' : '财经管理'}
-                </span>
-                <h3 className="text-base font-serif font-bold text-ink-800 group-hover:text-amber-700 transition-colors leading-snug mb-2">
-                  {book.title}
-                </h3>
-                <p className="text-xs text-ink-400 leading-relaxed line-clamp-3">
-                  {book.tags.filter(Boolean).join(' · ')}
-                </p>
-              </Link>
-            </Reveal>
-          ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {topics.filter(t => t.category === '管理思想丛书' && !t.slug.includes('-')).map((book, i) => {
+            const labels: Record<string, string> = {
+              '以客户为中心': '业务管理',
+              '以奋斗者为本': '人力资源管理',
+              '价值为纲': '财经管理',
+              '下一个倒下的会不会是华为': '企业哲学',
+              '为客户服务': '客户价值',
+              '熵减': '组织活力',
+              '质量为纲': '质量管理',
+              '从偶然到必然': '研发管理',
+            }
+            const label = labels[book.slug] || '管理思想'
+            return (
+              <Reveal key={book.slug} delay={((i % 4) + 1) as 1 | 2 | 3 | 4}>
+                <Link
+                  to={`/article/${book.slug}`}
+                  className="card-hover p-5 block group border-l-4 border-amber-400 bg-gradient-to-br from-white to-amber-50/30"
+                >
+                  <span className="text-xs font-medium text-amber-600 bg-amber-100 px-2.5 py-0.5 rounded inline-block mb-3">
+                    {label}
+                  </span>
+                  <h3 className="text-base font-serif font-bold text-ink-800 group-hover:text-amber-700 transition-colors leading-snug mb-2">
+                    {book.title}
+                  </h3>
+                  <p className="text-xs text-ink-400 leading-relaxed line-clamp-3">
+                    {book.tags.filter(Boolean).join(' · ')}
+                  </p>
+                </Link>
+              </Reveal>
+            )
+          })}
         </div>
       </section>
 
