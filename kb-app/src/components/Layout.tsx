@@ -1,8 +1,13 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import ScrollToTop from './ScrollToTop'
+import ReadingProgress from './ReadingProgress'
 import { useApp } from '../utils/context'
 import { useScrollReveal } from '../utils/hooks'
+import { recommendedBooks } from '../data/recommendedBooks'
+import { recommendedFigures } from '../data/recommendedFigures'
+import SidebarBooks from './SidebarBooks'
+import SidebarFigures from './SidebarFigures'
 
 export default function Layout() {
   const location = useLocation()
@@ -47,6 +52,7 @@ export default function Layout() {
     <div className="min-h-screen bg-cream-50 relative">
       <div className="grain-overlay" />
       <ScrollToTop />
+      <ReadingProgress />
 
       {/* Header */}
       <header className="sticky top-0 z-40 bg-cream-50/90 backdrop-blur-md border-b border-cream-200">
@@ -146,6 +152,7 @@ export default function Layout() {
               <button
                 onClick={() => setMobileSidebarOpen(false)}
                 className="p-1 rounded text-ink-400 hover:bg-cream-100 transition-colors"
+                aria-label="关闭侧边栏"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -167,6 +174,12 @@ export default function Layout() {
                 expandedYear={expandedYear}
                 setExpandedYear={setExpandedYear}
               />
+              <div className="mt-1">
+                <SidebarBooks books={recommendedBooks} onNavigate={() => setMobileSidebarOpen(false)} />
+              </div>
+              <div className="mt-1">
+                <SidebarFigures figures={recommendedFigures} onNavigate={() => setMobileSidebarOpen(false)} />
+              </div>
             </div>
           </div>
         </div>
@@ -176,7 +189,7 @@ export default function Layout() {
         {/* Desktop sidebar */}
         <aside className="hidden md:block w-56 lg:w-64 flex-shrink-0 border-r border-cream-200 h-[calc(100vh-4rem)] sticky top-16 overflow-y-auto bg-cream-50/50">
           <div className="p-4 space-y-5">
-            {/* Categories */}
+            {/* Categories & Recommendations */}
             <div>
               <h3 className="text-xs font-semibold text-ink-400 uppercase tracking-wider mb-3 px-2">
                 分类浏览
@@ -194,6 +207,12 @@ export default function Layout() {
                 expandedYear={expandedYear}
                 setExpandedYear={setExpandedYear}
               />
+              <div className="mt-1">
+                <SidebarBooks books={recommendedBooks} />
+              </div>
+              <div className="mt-1">
+                <SidebarFigures figures={recommendedFigures} />
+              </div>
             </div>
           </div>
         </aside>
