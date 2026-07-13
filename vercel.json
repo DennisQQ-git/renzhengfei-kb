@@ -1,6 +1,5 @@
 {
-  "rootDirectory": "kb-app",
-  "buildCommand": "npm run build",
-  "outputDirectory": "out",
+  "buildCommand": "cd kb-app && npm run build",
+  "outputDirectory": "kb-app/out",
   "framework": "nextjs"
 }
