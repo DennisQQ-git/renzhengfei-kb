@@ -3,7 +3,7 @@ import Link from 'next/link'
 import type { RecommendedFigure } from '../data/recommendedFigures'
 
 export default function SidebarFigures({ figures, onNavigate }: { figures: RecommendedFigure[]; onNavigate?: () => void }) {
-  const [expanded, setExpanded] = useState(true)
+  const [expanded, setExpanded] = useState(false)
 
   return (
     <div>

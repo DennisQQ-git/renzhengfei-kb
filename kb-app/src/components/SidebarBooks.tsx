@@ -3,7 +3,7 @@ import Link from 'next/link'
 import type { RecommendedBook } from '../data/recommendedBooks'
 
 export default function SidebarBooks({ books, onNavigate }: { books: RecommendedBook[]; onNavigate?: () => void }) {
-  const [expanded, setExpanded] = useState(true)
+  const [expanded, setExpanded] = useState(false)
 
   return (
     <div>
