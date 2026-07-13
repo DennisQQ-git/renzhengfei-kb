@@ -99,7 +99,7 @@ export const recommendedFigures: RecommendedFigure[] = [
     ],
   },
   {
-    name: '"蓝血十杰"',
+    name: '蓝血十杰',
     subtitle: '现代企业管理奠基者',
     description:
       '"蓝血十杰"指的是二战期间美国陆军航空队统计管制处（Office of Statistical Control）的十位精英军官。战后，这十人被亨利·福特二世招至濒临破产的福特汽车公司，以数据分析、科学管理、市场导向为核心，拯救了福特公司，开创了现代企业管理制度。\n\n' +

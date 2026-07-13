@@ -5,22 +5,21 @@ import type { Metadata } from 'next'
 
 export async function generateStaticParams() {
   const index = getIndexData()
-  return index.allTags.map(tag => ({ tag: encodeURIComponent(tag) }))
+  return index.allTags.map(tag => ({ tag }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ tag: string }> }): Promise<Metadata> {
   const { tag } = await params
   return {
-    title: `${decodeURIComponent(tag)} - 话题标签`,
-    description: `任正非讲话中关于「${decodeURIComponent(tag)}」的话题`,
+    title: `${tag} - 话题标签`,
+    description: `任正非讲话中关于「${tag}」的话题`,
   }
 }
 
 export default async function TagPage({ params }: { params: Promise<{ tag: string }> }) {
   const { tag } = await params
-  const decodedTag = decodeURIComponent(tag)
   const index = getIndexData()
-  const filtered = index.documents.filter(d => d.tags?.includes(decodedTag))
+  const filtered = index.documents.filter(d => d.tags?.includes(tag))
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -33,7 +32,7 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
             返回首页
           </Link>
           <h1 className="text-2xl md:text-3xl font-serif font-bold text-ink-800">
-            #{decodedTag}
+            #{tag}
           </h1>
           <p className="text-sm text-ink-400 mt-1">
             {filtered.length} 篇相关文章

@@ -4,22 +4,20 @@ import { recommendedBooks } from '@/data/recommendedBooks'
 import type { Metadata } from 'next'
 
 export async function generateStaticParams() {
-  return recommendedBooks.map(book => ({ name: encodeURIComponent(book.name) }))
+  return recommendedBooks.map(book => ({ name: book.name }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ name: string }> }): Promise<Metadata> {
   const { name } = await params
-  const decoded = decodeURIComponent(name)
   return {
-    title: `《${decoded}》`,
-    description: `任正非推荐书籍《${decoded}》的介绍及其对华为管理的影响`,
+    title: `《${name}》`,
+    description: `任正非推荐书籍《${name}》的介绍及其对华为管理的影响`,
   }
 }
 
 export default async function BookPage({ params }: { params: Promise<{ name: string }> }) {
   const { name } = await params
-  const decoded = decodeURIComponent(name)
-  const book = recommendedBooks.find(b => b.name === decoded)
+  const book = recommendedBooks.find(b => b.name === name)
 
   if (!book) {
     return (

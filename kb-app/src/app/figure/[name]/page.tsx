@@ -4,22 +4,20 @@ import { recommendedFigures } from '@/data/recommendedFigures'
 import type { Metadata } from 'next'
 
 export async function generateStaticParams() {
-  return recommendedFigures.map(figure => ({ name: encodeURIComponent(figure.name) }))
+  return recommendedFigures.map(figure => ({ name: figure.name }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ name: string }> }): Promise<Metadata> {
   const { name } = await params
-  const decoded = decodeURIComponent(name)
   return {
-    title: `${decoded} — 华为管理思想借鉴`,
-    description: `任正非借鉴的历史人物与军事思想——${decoded}对华为管理的启示`,
+    title: `${name} — 华为管理思想借鉴`,
+    description: `任正非借鉴的历史人物与军事思想——${name}对华为管理的启示`,
   }
 }
 
 export default async function FigurePage({ params }: { params: Promise<{ name: string }> }) {
   const { name } = await params
-  const decoded = decodeURIComponent(name)
-  const figure = recommendedFigures.find(f => f.name === decoded)
+  const figure = recommendedFigures.find(f => f.name === name)
 
   if (!figure) {
     return (
