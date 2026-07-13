@@ -1,5 +1,5 @@
 {
+  "installCommand": "cd kb-app && npm install",
   "buildCommand": "cd kb-app && npm run build",
-  "outputDirectory": "kb-app/out",
-  "framework": "nextjs"
+  "outputDirectory": "kb-app/out"
 }
