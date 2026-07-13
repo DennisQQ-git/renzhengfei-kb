@@ -1,2 +1,17 @@
+# Exclude large data source directory
 /huaweimind-master
 /IPD流程体系.md
+
+# Exclude kb-app build artifacts and dependencies
+kb-app/node_modules
+kb-app/.next
+kb-app/out
+kb-app/screenshots
+kb-app/e2e-screenshots
+kb-app/test-results
+kb-app/excalidraw.log
+
+# Exclude root build artifacts
+node_modules
+.next
+out
