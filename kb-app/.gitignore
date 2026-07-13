@@ -3,4 +3,11 @@ dist
 .DS_Store
 *.local
 
+.next
+out
+screenshots
+e2e-screenshots
+test-results
+excalidraw.log
+
 .vercel

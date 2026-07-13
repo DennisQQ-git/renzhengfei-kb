@@ -25,4 +25,3 @@ export interface IndexData {
 export interface YearStats {
   [year: string]: number
 }
-

@@ -1,4 +1,4 @@
-import type { IndexData } from '../types'
+import type { IndexData } from '@/lib/types'
 
 export interface GraphNode {
   id: string

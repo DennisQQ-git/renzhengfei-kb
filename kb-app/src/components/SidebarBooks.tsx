@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import type { RecommendedBook } from '../data/recommendedBooks'
 
 export default function SidebarBooks({ books, onNavigate }: { books: RecommendedBook[]; onNavigate?: () => void }) {
@@ -30,7 +30,7 @@ export default function SidebarBooks({ books, onNavigate }: { books: Recommended
           {books.map(book => (
             <Link
               key={book.name}
-              to={`/book/${encodeURIComponent(book.name)}`}
+              href={`/book/${encodeURIComponent(book.name)}`}
               onClick={onNavigate}
               className="block px-3 py-1.5 text-xs text-ink-500 hover:text-gold-600 hover:bg-cream-50 rounded transition-colors truncate"
             >

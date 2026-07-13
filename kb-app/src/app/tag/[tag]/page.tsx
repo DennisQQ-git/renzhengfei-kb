@@ -1,28 +1,32 @@
-import { useParams, Link } from 'react-router-dom'
-import Reveal from '../components/Reveal'
-import { useApp } from '../utils/context'
+import Link from 'next/link'
+import Reveal from '@/components/Reveal'
+import { getIndexData } from '@/lib/data'
+import type { Metadata } from 'next'
 
-export default function TagView() {
-  const { tag } = useParams<{ tag: string }>()
-  const { indexData } = useApp()
-  const decodedTag = tag ? decodeURIComponent(tag) : null
+export async function generateStaticParams() {
+  const index = getIndexData()
+  return index.allTags.map(tag => ({ tag: encodeURIComponent(tag) }))
+}
 
-  if (!decodedTag) {
-    return (
-      <div className="text-center py-16">
-        <p className="text-ink-400">标签未指定</p>
-        <Link to="/" className="btn-primary mt-4 inline-block">返回首页</Link>
-      </div>
-    )
+export async function generateMetadata({ params }: { params: Promise<{ tag: string }> }): Promise<Metadata> {
+  const { tag } = await params
+  return {
+    title: `${decodeURIComponent(tag)} - 话题标签`,
+    description: `任正非讲话中关于「${decodeURIComponent(tag)}」的话题`,
   }
+}
 
-  const filtered = indexData.documents.filter(d => d.tags?.includes(decodedTag))
+export default async function TagPage({ params }: { params: Promise<{ tag: string }> }) {
+  const { tag } = await params
+  const decodedTag = decodeURIComponent(tag)
+  const index = getIndexData()
+  const filtered = index.documents.filter(d => d.tags?.includes(decodedTag))
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <Reveal>
         <div className="pb-5 border-b border-cream-200">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-ink-400 hover:text-gold-600 transition-colors mb-3">
+          <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-ink-400 hover:text-gold-600 transition-colors mb-3">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
@@ -41,7 +45,7 @@ export default function TagView() {
         {filtered.map((doc, i) => (
           <Reveal key={doc.slug} delay={(i % 5 + 1) as 1 | 2 | 3 | 4 | 5}>
             <Link
-              to={`/article/${doc.slug}`}
+              href={`/article/${doc.slug}`}
               className="card-hover p-4 md:p-5 block group"
             >
               <div className="flex items-center gap-2 mb-2">

@@ -8,13 +8,8 @@
   }
 
   body {
-    font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Noto Serif SC', 'Source Han Serif SC', serif;
   }
 
   ::selection {
@@ -78,7 +73,6 @@
            text-sm;
   }
 
-  /* Wiki link styles */
   .wiki-link {
     @apply text-gold-600 no-underline border-b border-dashed border-gold-400/40
            transition-colors duration-200
@@ -99,7 +93,6 @@
     @apply text-red-400 border-b border-dashed border-red-200 cursor-not-allowed;
   }
 
-  /* Typography overrides for rendered markdown */
   .prose-custom {
     @apply prose prose-lg max-w-none
            prose-headings:font-serif prose-headings:text-ink-800 prose-headings:font-semibold
@@ -119,7 +112,6 @@
   }
 }
 
-/* Scroll-triggered fade-in animation */
 .reveal {
   opacity: 0;
   transform: translateY(24px);
@@ -137,7 +129,6 @@
 .reveal-delay-4 { transition-delay: 0.4s; }
 .reveal-delay-5 { transition-delay: 0.5s; }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 6px;
@@ -159,12 +150,12 @@
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
 .scrollbar-none {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
-/* Grain overlay */
 .grain-overlay {
   position: fixed;
   top: 0;
@@ -179,7 +170,6 @@
   background-size: 256px 256px;
 }
 
-/* Admin table styles */
 .admin-table {
   @apply w-full;
 }

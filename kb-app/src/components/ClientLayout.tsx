@@ -1,64 +1,97 @@
-import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
-import ScrollToTop from './ScrollToTop'
+'use client'
+
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import { useState, useEffect, useCallback } from 'react'
 import ReadingProgress from './ReadingProgress'
-import { useApp } from '../utils/context'
-import { useScrollReveal } from '../utils/hooks'
-import { recommendedBooks } from '../data/recommendedBooks'
-import { recommendedFigures } from '../data/recommendedFigures'
+import { recommendedBooks } from '@/data/recommendedBooks'
+import { recommendedFigures } from '@/data/recommendedFigures'
 import SidebarBooks from './SidebarBooks'
 import SidebarFigures from './SidebarFigures'
+import type { IndexData, DocumentMeta } from '@/lib/types'
 
-export default function Layout() {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const { indexData } = useApp()
+const CATEGORIES = ['任总内部讲话', '任总媒体采访', '华为高管讲话', '媒体报道']
+
+const DATA_BASE = '/data'
+const CACHE_KEY = 'kb-index-cache-v1'
+
+function loadIndexCache(): IndexData | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY)
+    if (!raw) return null
+    return JSON.parse(raw)
+  } catch {
+    return null
+  }
+}
+
+function saveIndexCache(data: IndexData): void {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data))
+  } catch {
+    // silently ignore
+  }
+}
+
+async function fetchIndex(): Promise<IndexData> {
+  const cached = loadIndexCache()
+  if (cached) return cached
+  const res = await fetch(`${DATA_BASE}/index.json`)
+  const data = await res.json()
+  saveIndexCache(data)
+  return data
+}
+
+export default function ClientLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const router = useRouter()
+  const [indexData, setIndexData] = useState<IndexData | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [expandedYear, setExpandedYear] = useState<number | null>(null)
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
-  const isActive = (path: string) => location.pathname === path
+  useEffect(() => {
+    fetchIndex().then(setIndexData).catch(console.error)
+  }, [])
+
+  const isActive = useCallback((path: string) => pathname === path, [pathname])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
       setSearchQuery('')
       setMenuOpen(false)
     }
   }
 
   const getYearCount = (year: number) =>
-    indexData.documents.filter(d => d.year === year).length
+    indexData?.documents.filter(d => d.year === year).length ?? 0
 
   const getYearDocs = (year: number) =>
-    indexData.documents.filter(d => d.year === year)
+    indexData?.documents.filter(d => d.year === year) ?? []
 
-  // Category-based filtering
   const getCategoryDocs = (category: string) => {
+    if (!indexData) return []
     if (category === '任总内部讲话') {
       return indexData.documents.filter(d => !d.category && d.year > 0)
     }
     return indexData.documents.filter(d => d.category === category)
   }
-  const getCategoryCount = (category: string) => getCategoryDocs(category).length
 
-  const CATEGORIES = ['任总内部讲话', '任总媒体采访', '华为高管讲话', '媒体报道']
+  const getCategoryCount = (category: string) => getCategoryDocs(category).length
 
   return (
     <div className="min-h-screen bg-cream-50 relative">
       <div className="grain-overlay" />
-      <ScrollToTop />
       <ReadingProgress />
 
       {/* Header */}
       <header className="sticky top-0 z-40 bg-cream-50/90 backdrop-blur-md border-b border-cream-200">
         <div className="container-page">
           <div className="flex items-center justify-between h-16">
-            {/* Hamburger (triggers mobile sidebar) */}
             <button
               onClick={() => setMobileSidebarOpen(true)}
               className="md:hidden p-2 -ml-2 rounded-lg text-ink-400 hover:bg-cream-100 transition-colors"
@@ -69,8 +102,7 @@ export default function Layout() {
               </svg>
             </button>
 
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 group">
+            <Link href="/" className="flex items-center gap-2 group">
               <span className="text-xl md:text-2xl font-serif font-bold text-ink-800 group-hover:text-gold-600 transition-colors duration-300">
                 任正非讲话
               </span>
@@ -79,12 +111,10 @@ export default function Layout() {
               </span>
             </Link>
 
-            {/* Desktop Nav - simplified */}
             <nav className="hidden md:flex items-center gap-1">
-              <NavLink to="/" active={isActive('/')}>首页</NavLink>
-              <NavLink to="/graph" active={isActive('/graph')}>关系图谱</NavLink>
+              <NavLink href="/" active={isActive('/')}>首页</NavLink>
+              <NavLink href="/graph" active={isActive('/graph')}>关系图谱</NavLink>
 
-              {/* Search */}
               <form onSubmit={handleSearch} className="ml-4 relative">
                 <input
                   type="text"
@@ -102,7 +132,6 @@ export default function Layout() {
               </form>
             </nav>
 
-            {/* Mobile menu button (for search) */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="md:hidden p-2 -mr-2 rounded-lg text-ink-400 hover:bg-cream-100 transition-colors"
@@ -115,7 +144,6 @@ export default function Layout() {
           </div>
         </div>
 
-        {/* Mobile search */}
         {menuOpen && (
           <div className="md:hidden border-t border-cream-200 bg-cream-50/95 backdrop-blur-md">
             <div className="container-page py-3">
@@ -129,8 +157,8 @@ export default function Layout() {
                 />
               </form>
               <div className="flex gap-2 mt-3">
-                <MobileNavLink to="/" onClick={() => setMenuOpen(false)}>首页</MobileNavLink>
-                <MobileNavLink to="/graph" onClick={() => setMenuOpen(false)}>关系图谱</MobileNavLink>
+                <MobileNavLink href="/" onClick={() => setMenuOpen(false)}>首页</MobileNavLink>
+                <MobileNavLink href="/graph" onClick={() => setMenuOpen(false)}>关系图谱</MobileNavLink>
               </div>
             </div>
           </div>
@@ -160,20 +188,24 @@ export default function Layout() {
               </button>
             </div>
             <div className="px-4 pt-3 pb-2">
-              <h4 className="text-xs font-semibold text-ink-400 uppercase tracking-wider mb-2">分类浏览</h4>
-              <CategoryList
-                categories={CATEGORIES}
-                getCategoryDocs={getCategoryDocs}
-                getCategoryCount={getCategoryCount}
-                expandedCategory={expandedCategory}
-                setExpandedCategory={setExpandedCategory}
-                onNavigate={() => setMobileSidebarOpen(false)}
-                years={indexData.years}
-                getYearCount={getYearCount}
-                getYearDocs={getYearDocs}
-                expandedYear={expandedYear}
-                setExpandedYear={setExpandedYear}
-              />
+              {indexData && (
+                <>
+                  <h4 className="text-xs font-semibold text-ink-400 uppercase tracking-wider mb-2">分类浏览</h4>
+                  <CategoryList
+                    categories={CATEGORIES}
+                    getCategoryDocs={getCategoryDocs}
+                    getCategoryCount={getCategoryCount}
+                    expandedCategory={expandedCategory}
+                    setExpandedCategory={setExpandedCategory}
+                    onNavigate={() => setMobileSidebarOpen(false)}
+                    years={indexData.years}
+                    getYearCount={getYearCount}
+                    getYearDocs={getYearDocs}
+                    expandedYear={expandedYear}
+                    setExpandedYear={setExpandedYear}
+                  />
+                </>
+              )}
               <div className="mt-1">
                 <SidebarBooks books={recommendedBooks} onNavigate={() => setMobileSidebarOpen(false)} />
               </div>
@@ -189,37 +221,38 @@ export default function Layout() {
         {/* Desktop sidebar */}
         <aside className="hidden md:block w-56 lg:w-64 flex-shrink-0 border-r border-cream-200 h-[calc(100vh-4rem)] sticky top-16 overflow-y-auto bg-cream-50/50">
           <div className="p-4 space-y-5">
-            {/* Categories & Recommendations */}
-            <div>
-              <h3 className="text-xs font-semibold text-ink-400 uppercase tracking-wider mb-3 px-2">
-                分类浏览
-              </h3>
-              <CategoryList
-                categories={CATEGORIES}
-                getCategoryDocs={getCategoryDocs}
-                getCategoryCount={getCategoryCount}
-                expandedCategory={expandedCategory}
-                setExpandedCategory={setExpandedCategory}
-                onNavigate={() => {}}
-                years={indexData.years}
-                getYearCount={getYearCount}
-                getYearDocs={getYearDocs}
-                expandedYear={expandedYear}
-                setExpandedYear={setExpandedYear}
-              />
-              <div className="mt-1">
-                <SidebarBooks books={recommendedBooks} />
+            {indexData && (
+              <div>
+                <h3 className="text-xs font-semibold text-ink-400 uppercase tracking-wider mb-3 px-2">
+                  分类浏览
+                </h3>
+                <CategoryList
+                  categories={CATEGORIES}
+                  getCategoryDocs={getCategoryDocs}
+                  getCategoryCount={getCategoryCount}
+                  expandedCategory={expandedCategory}
+                  setExpandedCategory={setExpandedCategory}
+                  onNavigate={() => {}}
+                  years={indexData.years}
+                  getYearCount={getYearCount}
+                  getYearDocs={getYearDocs}
+                  expandedYear={expandedYear}
+                  setExpandedYear={setExpandedYear}
+                />
+                <div className="mt-1">
+                  <SidebarBooks books={recommendedBooks} />
+                </div>
+                <div className="mt-1">
+                  <SidebarFigures figures={recommendedFigures} />
+                </div>
               </div>
-              <div className="mt-1">
-                <SidebarFigures figures={recommendedFigures} />
-              </div>
-            </div>
+            )}
           </div>
         </aside>
 
         {/* Main content */}
         <main className="flex-1 min-w-0 container-page py-6 md:py-10 min-h-[calc(100vh-4rem)]">
-          <Outlet />
+          {children}
         </main>
       </div>
 
@@ -250,11 +283,39 @@ export default function Layout() {
   )
 }
 
-/* Year accordion list shared by desktop sidebar and mobile drawer */
+/* Sub-components */
+
+function NavLink({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+        active
+          ? 'bg-cream-200 text-ink-800'
+          : 'text-ink-500 hover:text-ink-700 hover:bg-cream-100'
+      }`}
+    >
+      {children}
+    </Link>
+  )
+}
+
+function MobileNavLink({ href, onClick, children }: { href: string; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className="inline-block px-3 py-2 text-sm font-medium text-ink-600 hover:bg-cream-100 rounded-lg transition-colors"
+    >
+      {children}
+    </Link>
+  )
+}
+
 function YearList({ years, getYearCount, getYearDocs, expandedYear, setExpandedYear, onNavigate }: {
   years: number[]
   getYearCount: (y: number) => number
-  getYearDocs: (y: number) => IndexData['documents']
+  getYearDocs: (y: number) => DocumentMeta[]
   expandedYear: number | null
   setExpandedYear: (y: number | null) => void
   onNavigate: () => void
@@ -286,7 +347,6 @@ function YearList({ years, getYearCount, getYearDocs, expandedYear, setExpandedY
               <span className="text-xs text-ink-400 ml-auto">{count}篇</span>
             </button>
 
-            {/* Expanded doc list */}
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
                 isExpanded ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
@@ -296,7 +356,7 @@ function YearList({ years, getYearCount, getYearDocs, expandedYear, setExpandedY
                 {docs.map(doc => (
                   <Link
                     key={doc.slug}
-                    to={`/article/${doc.slug}`}
+                    href={`/article/${doc.slug}`}
                     onClick={onNavigate}
                     className="block px-3 py-1.5 text-xs text-ink-500 hover:text-gold-600 hover:bg-cream-50 rounded transition-colors truncate"
                   >
@@ -305,7 +365,7 @@ function YearList({ years, getYearCount, getYearDocs, expandedYear, setExpandedY
                 ))}
                 {count > 6 && (
                   <Link
-                    to={`/year/${year}`}
+                    href={`/year/${year}`}
                     onClick={onNavigate}
                     className="block px-3 py-1 text-xs text-gold-600 hover:text-gold-500 font-medium"
                   >
@@ -321,17 +381,16 @@ function YearList({ years, getYearCount, getYearDocs, expandedYear, setExpandedY
   )
 }
 
-/* Category accordion list, with year sub-accordion for 任总内部讲话 */
 function CategoryList({ categories, getCategoryDocs, getCategoryCount, expandedCategory, setExpandedCategory, onNavigate, years, getYearCount, getYearDocs, expandedYear, setExpandedYear }: {
   categories: string[]
-  getCategoryDocs: (cat: string) => IndexData['documents']
+  getCategoryDocs: (cat: string) => DocumentMeta[]
   getCategoryCount: (cat: string) => number
   expandedCategory: string | null
   setExpandedCategory: (cat: string | null) => void
   onNavigate: () => void
   years?: number[]
   getYearCount?: (y: number) => number
-  getYearDocs?: (y: number) => IndexData['documents']
+  getYearDocs?: (y: number) => DocumentMeta[]
   expandedYear?: number | null
   setExpandedYear?: (y: number | null) => void
 }) {
@@ -361,7 +420,6 @@ function CategoryList({ categories, getCategoryDocs, getCategoryCount, expandedC
               <span className="text-xs text-ink-400 ml-auto">{count}篇</span>
             </button>
 
-            {/* Expanded content */}
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${
                 isExpanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'
@@ -381,7 +439,7 @@ function CategoryList({ categories, getCategoryDocs, getCategoryCount, expandedC
                   isExpanded && getCategoryDocs(cat).slice(0, 10).map(doc => (
                     <Link
                       key={doc.slug}
-                      to={`/article/${doc.slug}`}
+                      href={`/article/${doc.slug}`}
                       onClick={onNavigate}
                       className="block px-3 py-1.5 text-xs text-ink-500 hover:text-gold-600 hover:bg-cream-50 rounded transition-colors truncate"
                     >
@@ -395,32 +453,5 @@ function CategoryList({ categories, getCategoryDocs, getCategoryCount, expandedC
         )
       })}
     </nav>
-  )
-}
-
-function NavLink({ to, active, children }: { to: string; active: boolean; children: React.ReactNode }) {
-  return (
-    <Link
-      to={to}
-      className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-        active
-          ? 'bg-cream-200 text-ink-800'
-          : 'text-ink-500 hover:text-ink-700 hover:bg-cream-100'
-      }`}
-    >
-      {children}
-    </Link>
-  )
-}
-
-function MobileNavLink({ to, onClick, children }: { to: string; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <Link
-      to={to}
-      onClick={onClick}
-      className="inline-block px-3 py-2 text-sm font-medium text-ink-600 hover:bg-cream-100 rounded-lg transition-colors"
-    >
-      {children}
-    </Link>
   )
 }

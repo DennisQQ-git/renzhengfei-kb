@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import type { RecommendedFigure } from '../data/recommendedFigures'
 
 export default function SidebarFigures({ figures, onNavigate }: { figures: RecommendedFigure[]; onNavigate?: () => void }) {
@@ -30,7 +30,7 @@ export default function SidebarFigures({ figures, onNavigate }: { figures: Recom
           {figures.map(fig => (
             <Link
               key={fig.name}
-              to={`/figure/${encodeURIComponent(fig.name)}`}
+              href={`/figure/${encodeURIComponent(fig.name)}`}
               onClick={onNavigate}
               className="block px-3 py-1.5 text-xs text-ink-500 hover:text-gold-600 hover:bg-cream-50 rounded transition-colors truncate"
             >

@@ -1,5 +1,4 @@
 import { useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide } from 'd3-force'
 import { select, pointer } from 'd3-selection'
 import { zoom as d3zoom, zoomTransform } from 'd3-zoom'

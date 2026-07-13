@@ -1,35 +1,36 @@
-import { useParams, Link } from 'react-router-dom'
-import Reveal from '../components/Reveal'
-import { useApp } from '../utils/context'
+import Link from 'next/link'
+import Reveal from '@/components/Reveal'
+import { getIndexData } from '@/lib/data'
+import type { Metadata } from 'next'
 
-export default function YearView() {
-  const { year } = useParams<{ year: string }>()
-  const { indexData } = useApp()
-  const yearNum = parseInt(year || '0')
+export async function generateStaticParams() {
+  const index = getIndexData()
+  return index.years.map(year => ({ year: String(year) }))
+}
 
-  const docs = indexData.documents.filter(d => d.year === yearNum)
-  const yearIndex = indexData.years.indexOf(yearNum)
-
-  if (!year || docs.length === 0) {
-    return (
-      <div className="text-center py-16">
-        <p className="text-ink-400">该年份暂无文章</p>
-        <Link to="/" className="btn-primary mt-4 inline-block">返回首页</Link>
-      </div>
-    )
+export async function generateMetadata({ params }: { params: Promise<{ year: string }> }): Promise<Metadata> {
+  const { year } = await params
+  return {
+    title: `${year} 年讲话`,
+    description: `任正非 ${year} 年讲话合集`,
   }
+}
 
-  const prevYear = yearIndex > 0 ? indexData.years[yearIndex - 1] : null
-  const nextYear = yearIndex < indexData.years.length - 1 ? indexData.years[yearIndex + 1] : null
-
+export default async function YearPage({ params }: { params: Promise<{ year: string }> }) {
+  const { year } = await params
+  const yearNum = parseInt(year)
+  const index = getIndexData()
+  const docs = index.documents.filter(d => d.year === yearNum)
+  const yearIndex = index.years.indexOf(yearNum)
+  const prevYear = yearIndex > 0 ? index.years[yearIndex - 1] : null
+  const nextYear = yearIndex < index.years.length - 1 ? index.years[yearIndex + 1] : null
   const yearTags = [...new Set(docs.flatMap(d => d.tags))].filter(Boolean).sort()
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
-      {/* Header */}
       <Reveal>
         <div className="text-center pb-5 border-b border-cream-200">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-ink-400 hover:text-gold-600 transition-colors mb-3">
+          <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-ink-400 hover:text-gold-600 transition-colors mb-3">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
@@ -47,12 +48,12 @@ export default function YearView() {
 
           <div className="flex items-center justify-center gap-4 mt-4">
             {prevYear ? (
-              <Link to={`/year/${prevYear}`} className="btn-ghost text-sm gap-1">
+              <Link href={`/year/${prevYear}`} className="btn-ghost text-sm gap-1">
                 ← {prevYear}
               </Link>
             ) : <div />}
             {nextYear ? (
-              <Link to={`/year/${nextYear}`} className="btn-ghost text-sm gap-1">
+              <Link href={`/year/${nextYear}`} className="btn-ghost text-sm gap-1">
                 {nextYear} →
               </Link>
             ) : <div />}
@@ -63,7 +64,7 @@ export default function YearView() {
               {yearTags.map(tag => (
                 <Link
                   key={tag}
-                  to={`/tag/${encodeURIComponent(tag)}`}
+                  href={`/tag/${encodeURIComponent(tag)}`}
                   className="text-xs text-ink-400 bg-cream-100 hover:bg-cream-200 px-2.5 py-1 rounded-full transition-colors"
                 >
                   #{tag}
@@ -74,12 +75,11 @@ export default function YearView() {
         </div>
       </Reveal>
 
-      {/* Article list */}
       <div className="space-y-3">
         {docs.map((doc, i) => (
           <Reveal key={doc.slug} delay={(i % 5 + 1) as 1 | 2 | 3 | 4 | 5}>
             <Link
-              to={`/article/${doc.slug}`}
+              href={`/article/${doc.slug}`}
               className="card-hover p-4 md:p-5 block group"
             >
               <h2 className="text-base md:text-lg font-serif font-semibold text-ink-800 group-hover:text-gold-600 transition-colors">

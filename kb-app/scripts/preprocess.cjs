@@ -74,6 +74,20 @@ function extractExcerpt(body, maxLen = 200) {
   return clean.length > maxLen ? clean.slice(0, maxLen) + '…' : clean;
 }
 
+/** Strip markdown, return plain text (for full-text search index) */
+function extractPlainText(body, maxLen = 1500) {
+  const clean = body
+    .replace(/^#+\s+.*$/gm, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\[\[([^\]]+)\]\]/g, '$1')
+    .replace(/>\s*(.*)/g, '$1')
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/[#*`=\[\]|~]/g, '')
+    .replace(/\n{2,}/g, '\n')
+    .trim();
+  return clean.length > maxLen ? clean.slice(0, maxLen) : clean;
+}
+
 // Resolve wiki links [[target]] or [[target|display]]
 function processWikiLinks(body, docSlugMap) {
   return body.replace(/\[\[([^\]]+)\]\]/g, (match, inner) => {
@@ -256,6 +270,7 @@ async function main() {
       const slug = slugify(name);
       const title = frontmatter.title || extractTitleFromBody(body) || cleanName;
       const excerpt = extractExcerpt(body);
+      const text = extractPlainText(body);
       const htmlContent = markdownToHtml(body, docSlugMap);
 
       const doc = {
@@ -264,6 +279,7 @@ async function main() {
         year: parseInt(year),
         filename: file,
         excerpt,
+        text,
         html: htmlContent,
         tags: frontmatter.tags ? (Array.isArray(frontmatter.tags) ? frontmatter.tags : [frontmatter.tags]) : [],
         category: frontmatter.category || '',
@@ -333,8 +349,8 @@ async function main() {
   fs.writeFileSync(path.join(OUTPUT_DIR, 'featured.json'), JSON.stringify(featured));
 
   // Write search-index.json — all docs with excerpts for the search page
-  const searchIndex = allDocs.map(({ slug, title, year, excerpt, tags, category, isTopic }) => ({
-    slug, title, year, excerpt, tags, category, isTopic: !!isTopic
+  const searchIndex = allDocs.map(({ slug, title, year, excerpt, text, tags, category, isTopic }) => ({
+    slug, title, year, excerpt, text, tags, category, isTopic: !!isTopic
   }));
   fs.writeFileSync(path.join(OUTPUT_DIR, 'search-index.json'), JSON.stringify(searchIndex));
 
