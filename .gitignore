@@ -7,3 +7,16 @@ dist
 
 .vercel
 .env*
+
+# Generated output directories
+*_output/
+
+# Screenshots and logs
+screenshot*
+excalidraw.log
+
+# Draft files
+/美国对华芯片封锁.md
+/人民日报专访任正非20250610.md
+/纽约时报弗里德曼华为行.md
+/《粟裕战争回忆录》第十章：苏中战役，七战七捷.md
