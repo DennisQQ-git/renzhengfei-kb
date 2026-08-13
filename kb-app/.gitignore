@@ -16,3 +16,4 @@ excalidraw.log
 check-output
 scripts/check-live.mjs
 scripts/probe-routes.mjs
+scripts/sanity-live.mjs
