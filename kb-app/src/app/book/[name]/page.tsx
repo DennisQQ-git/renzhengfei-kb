@@ -17,7 +17,8 @@ export async function generateMetadata({ params }: { params: Promise<{ name: str
 
 export default async function BookPage({ params }: { params: Promise<{ name: string }> }) {
   const { name } = await params
-  const book = recommendedBooks.find(b => b.name === name)
+  // Next.js static export URL-encodes Chinese dynamic params; decode before matching.
+  const book = recommendedBooks.find(b => b.name === decodeURIComponent(name))
 
   if (!book) {
     return (

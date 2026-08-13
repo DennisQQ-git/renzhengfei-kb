@@ -17,7 +17,8 @@ export async function generateMetadata({ params }: { params: Promise<{ name: str
 
 export default async function FigurePage({ params }: { params: Promise<{ name: string }> }) {
   const { name } = await params
-  const figure = recommendedFigures.find(f => f.name === name)
+  // Next.js static export URL-encodes Chinese dynamic params; decode before matching.
+  const figure = recommendedFigures.find(f => f.name === decodeURIComponent(name))
 
   if (!figure) {
     return (

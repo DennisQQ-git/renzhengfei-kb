@@ -17,7 +17,9 @@ export async function generateMetadata({ params }: { params: Promise<{ tag: stri
 }
 
 export default async function TagPage({ params }: { params: Promise<{ tag: string }> }) {
-  const { tag } = await params
+  const { tag: rawTag } = await params
+  // Next.js static export URL-encodes Chinese dynamic params; decode before matching.
+  const tag = decodeURIComponent(rawTag)
   const index = getIndexData()
   const filtered = index.documents.filter(d => d.tags?.includes(tag))
 

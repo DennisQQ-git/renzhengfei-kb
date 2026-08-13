@@ -11,3 +11,8 @@ test-results
 excalidraw.log
 
 .vercel
+
+# Diagnostic scripts and outputs
+check-output
+scripts/check-live.mjs
+scripts/probe-routes.mjs
