@@ -1,4 +1,3 @@
 {
-  "buildCommand": "cd kb-app && npm run build",
-  "outputDirectory": "kb-app/out"
+  "buildCommand": "npm run build"
 }
